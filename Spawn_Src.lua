@@ -1,12 +1,11 @@
 local Entity = {}
 
 function calculateTweenDuration(percentage)
-    percentage = math.min(100, math.max(0, percentage))
-    local minDuration = 1000
-    local maxDuration = 100
-    return minDuration + (maxDuration - minDuration) * (1 - percentage / 100)
+    local defaultDuration = 1.5
+    local scaledPercentage = percentage / 100
+    local duration = defaultDuration * (1 - scaledPercentage)
+    return duration
 end
-
 
 
 function Entity.new(assetId, tweenDuration, canEntityKill)
@@ -30,8 +29,11 @@ function Entity.new(assetId, tweenDuration, canEntityKill)
     )
 
     local function createAndPlayTween()
-        local nextRoomIndex = currentRoomIndex % #rooms + 1
+        local nextRoomIndex = (currentRoomIndex % #rooms) + 1
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
+
+        print("Next room index:", nextRoomIndex)
+        print("Next room CFrame:", nextRoomCFrame)
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
         tween:Play()
