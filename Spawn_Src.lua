@@ -29,11 +29,8 @@ function Entity.new(assetId, tweenDuration, canEntityKill)
     )
 
     local function createAndPlayTween()
-        local nextRoomIndex = (currentRoomIndex % #rooms) + 1
+        local nextRoomIndex = currentRoomIndex % #rooms + 1
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
-
-        print("Next room index:", nextRoomIndex)
-        print("Next room CFrame:", nextRoomCFrame)
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
         tween:Play()
