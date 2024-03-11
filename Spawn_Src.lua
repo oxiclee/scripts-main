@@ -25,17 +25,18 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay)
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
-        task.wait(delay)
       
         tween:Play()
         currentRoomIndex = nextRoomIndex
 
         if nextRoomIndex == 1 then
-            object:Destroy()  -- Destroy the object when the final room's tween is completed
+            object:Destroy()  
         else
-            tween.Completed:Connect(createAndPlayTween)  -- Recursively create and play tween for the next room
+            tween.Completed:Connect(createAndPlayTween)  
         end
     end
+
+   task.wait(delay)
 
     createAndPlayTween()
 
