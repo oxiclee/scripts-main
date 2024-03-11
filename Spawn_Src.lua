@@ -14,6 +14,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     else
         part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
     end
+   
 
     local tweenInfo = TweenInfo.new(
         tweenDuration,
@@ -28,29 +29,19 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         local nextRoomIndex
 
         if backwards then
-            if currentRoomIndex == #rooms then
-                nextRoomIndex = #rooms
-            else
-                nextRoomIndex = currentRoomIndex > 1 and currentRoomIndex - 1 or #rooms
-            end
+            nextRoomIndex = currentRoomIndex > 1 and currentRoomIndex - 1 or #rooms
         else
             nextRoomIndex = currentRoomIndex % #rooms + 1
         end
 
-        local nextRoomCFrame
-
-        if backwards and currentRoomIndex == #rooms then
-            nextRoomCFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
-        else
-            nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
-        end
+        local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
         tween:Play()
 
         currentRoomIndex = nextRoomIndex
 
-        if backwards and nextRoomIndex == 1 then
+        if (backwards and nextRoomIndex == #rooms) or (not backwards and nextRoomIndex == 1) then
             object:Destroy()
         else
             tween.Completed:Connect(createAndPlayTween)
