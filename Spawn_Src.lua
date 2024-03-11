@@ -50,12 +50,8 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
         currentRoomIndex = nextRoomIndex
 
-        if (backwards and nextRoomIndex == 1) or (not backwards and nextRoomIndex == #rooms) then
-            if backwards then
-                task.wait(tweenDuration)
-            else
-                object:Destroy()
-            end
+        if backwards and nextRoomIndex == 1 then
+            object:Destroy()
         else
             tween.Completed:Connect(createAndPlayTween)
         end
