@@ -12,7 +12,7 @@ function Entity.new(assetId, tweenDuration, canEntityKill)
     part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
 
     local tweenInfo = TweenInfo.new(
-        tweenDuration,
+        tweenDuration/100,
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.Out,
         0,
