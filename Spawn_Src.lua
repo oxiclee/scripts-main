@@ -9,12 +9,6 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local currentRoomIndex = backwards and #rooms or 1
 
     object.Parent = workspace
-    if not backwards then
-        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
-    else
-        part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
-    end
-   
 
     local tweenInfo = TweenInfo.new(
         tweenDuration,
@@ -25,14 +19,8 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         0
     )
 
-    local function createAndPlayTween()
-        local nextRoomIndex
-
-        if backwards then
-            nextRoomIndex = currentRoomIndex > 1 and currentRoomIndex - 1 or #rooms
-        else
-            nextRoomIndex = currentRoomIndex % #rooms + 1
-        end
+    local function createAndPlayTween(targetIndex)
+        local nextRoomIndex = targetIndex or currentRoomIndex
 
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
@@ -44,13 +32,29 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         if (backwards and nextRoomIndex == #rooms) or (not backwards and nextRoomIndex == 1) then
             object:Destroy()
         else
-            tween.Completed:Connect(createAndPlayTween)
+            tween.Completed:Connect(function()
+                if backwards and nextRoomIndex == #rooms then
+                    createAndPlayTween(1)
+                else
+                    createAndPlayTween((nextRoomIndex % #rooms) + 1)
+                end
+            end)
         end
     end
 
-    task.wait(delay)
-
-    createAndPlayTween()
+    if backwards then
+        local lastRoomIndex = #rooms
+        local lastRoomCFrame = rooms[lastRoomIndex].PrimaryPart.CFrame
+        local tweenToLastRoom = ts:Create(part, tweenInfo, { CFrame = lastRoomCFrame })
+        tweenToLastRoom:Play()
+        tweenToLastRoom.Completed:Connect(function()
+            createAndPlayTween(lastRoomIndex)
+        end)
+    else
+        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
+        task.wait(delay)
+        createAndPlayTween()
+    end
 
     part.Touched:Connect(function(otherpart)
         if otherpart.Parent == game:GetService("Players").LocalPlayer.Character then
