@@ -9,7 +9,12 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local currentRoomIndex = backwards and #rooms or 1
 
     object.Parent = workspace
-    part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
+    if not backwards then
+        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
+    else
+        part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
+    end
+   
 
     local tweenInfo = TweenInfo.new(
         tweenDuration,
