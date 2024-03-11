@@ -1,7 +1,7 @@
 local Entity = {}
 
-function Entity.new(assetId, tweenDuration, canEntityKill)
-   local object = game:GetObjects("rbxassetid://" .. assetId)[1]
+function Entity.new(asset, tweenDuration, canEntityKill, delay)
+   local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
     local rooms = workspace.CurrentRooms:GetChildren()
     local ts = game:GetService("TweenService")
@@ -25,8 +25,9 @@ function Entity.new(assetId, tweenDuration, canEntityKill)
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
+        task.wait(delay)
+      
         tween:Play()
-
         currentRoomIndex = nextRoomIndex
 
         if nextRoomIndex == 1 then
