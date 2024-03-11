@@ -1,29 +1,50 @@
 local Entity = {}
 
-function Entity.setup(params)
-    Entity.model = params.Model
-    Entity.speed = params.Speed
-    Entity.moveDelay = params.MoveDelay
-    Entity.heightOffset = params.HeightOffset
-    Entity.canKill = params.CanKill
-    Entity.killRange = params.KillRange
-end
-
-function Entity.create()
-    local object = game:GetObjects(Entity.model)[1]
+function Entity.new(assetId, tweenDuration, canEntityKill)
+    local object = game:GetObjects("rbxassetid://" .. assetId)[1]
     local part = object.PrimaryPart
+    local rooms = workspace.CurrentRooms:GetChildren()
     local ts = game:GetService("TweenService")
 
-    local tween = ts:Create(part, TweenInfo.new(1), { CFrame = CFrame.new(10, 0, 0) })
-    tween:Play()
+    local currentRoomIndex = 1
 
-    game:GetService("RunService").Stepped:Connect(function()
-        for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
-            local distance = (part.Position - player.Character.HumanoidRootPart.Position).magnitude
-            if distance <= Entity.killRange then
-                if Entity.canKill then
-                    player.Character.Humanoid.Health = 0
-                end
+    object.Parent = workspace
+    part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
+
+    local tweenInfo = TweenInfo.new(
+        tweenDuration,
+        Enum.EasingStyle.Linear,
+        Enum.EasingDirection.Out,
+        0,
+        false,
+        0
+    )
+
+    local function createAndPlayTween()
+        local nextRoomIndex = currentRoomIndex % #rooms + 1
+        local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
+
+        local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
+        tween:Play()
+
+        currentRoomIndex = nextRoomIndex
+
+        if nextRoomIndex == 1 then
+            object:Destroy()  -- Destroy the object when the final room's tween is completed
+        else
+            tween.Completed:Connect(createAndPlayTween)  -- Recursively create and play tween for the next room
+        end
+    end
+
+    createAndPlayTween()
+
+    part.Touched:Connect(function(otherpart)
+        if otherpart.Parent == game:GetService("Players").LocalPlayer.Character then
+            if canEntityKill then
+                game:GetService("Players").LocalPlayer.Character.Humanoid.Health = 0
+            else
+                print("cannot kill")
+                return
             end
         end
     end)
