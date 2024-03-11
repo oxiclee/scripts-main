@@ -1,12 +1,12 @@
 local Entity = {}
 
-function Entity.new(asset, tweenDuration, canEntityKill, delay)
+function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
     local rooms = workspace.CurrentRooms:GetChildren()
     local ts = game:GetService("TweenService")
 
-    local currentRoomIndex = 1
+    local currentRoomIndex = backwards and #rooms or 1
 
     object.Parent = workspace
     part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
@@ -21,22 +21,29 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay)
     )
 
     local function createAndPlayTween()
-        local nextRoomIndex = currentRoomIndex % #rooms + 1
+        local nextRoomIndex
+
+        if backwards then
+            nextRoomIndex = currentRoomIndex > 1 and currentRoomIndex - 1 or #rooms
+        else
+            nextRoomIndex = currentRoomIndex % #rooms + 1
+        end
+
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
-      
         tween:Play()
+
         currentRoomIndex = nextRoomIndex
 
-        if nextRoomIndex == 1 then
-            object:Destroy()  
+        if (backwards and nextRoomIndex == #rooms) or (not backwards and nextRoomIndex == 1) then
+            object:Destroy()
         else
-            tween.Completed:Connect(createAndPlayTween)  
+            tween.Completed:Connect(createAndPlayTween)
         end
     end
 
-   task.wait(delay)
+    task.wait(delay)
 
     createAndPlayTween()
 
@@ -51,4 +58,5 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay)
         end
     end)
 end
+
 return Entity
