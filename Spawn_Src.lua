@@ -1,15 +1,7 @@
 local Entity = {}
 
-function calculateTweenDuration(percentage)
-    local defaultDuration = 1.5
-    local scaledPercentage = percentage / 100
-    local duration = defaultDuration * (1 - scaledPercentage)
-    return duration
-end
-
-
 function Entity.new(assetId, tweenDuration, canEntityKill)
-    local object = game:GetObjects("rbxassetid://" .. assetId)[1]
+   local object = game:GetObjects("rbxassetid://" .. assetId)[1]
     local part = object.PrimaryPart
     local rooms = workspace.CurrentRooms:GetChildren()
     local ts = game:GetService("TweenService")
@@ -20,7 +12,7 @@ function Entity.new(assetId, tweenDuration, canEntityKill)
     part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
 
     local tweenInfo = TweenInfo.new(
-        calculateTweenDuration(tweenDuration),
+        tweenDuration,
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.Out,
         0,
@@ -57,5 +49,4 @@ function Entity.new(assetId, tweenDuration, canEntityKill)
         end
     end)
 end
-
 return Entity
