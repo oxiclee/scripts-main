@@ -1,5 +1,14 @@
 local Entity = {}
 
+function calculateTweenDuration(percentage)
+    percentage = math.min(100, math.max(0, percentage))
+    local minDuration = 1000
+    local maxDuration = 100
+    return minDuration + (maxDuration - minDuration) * (1 - percentage / 100)
+end
+
+
+
 function Entity.new(assetId, tweenDuration, canEntityKill)
     local object = game:GetObjects("rbxassetid://" .. assetId)[1]
     local part = object.PrimaryPart
@@ -12,7 +21,7 @@ function Entity.new(assetId, tweenDuration, canEntityKill)
     part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
 
     local tweenInfo = TweenInfo.new(
-        tweenDuration/100,
+        calculateTweenDuration(tweenDuration),
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.Out,
         0,
