@@ -35,6 +35,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
 
         if isLastRoom and rebound then
             backwards = not backwards
+            currentRoomIndex = backwards and #rooms or 1 -- Reset currentRoomIndex here
             createAndPlayTween()
         elseif isLastRoom then
             object:Destroy()
