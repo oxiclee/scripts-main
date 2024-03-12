@@ -21,13 +21,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
         0
     )
 
-    local function reboundEntity()
-        backwards = not backwards
-        currentRoomIndex = backwards and #rooms or 1
-        createAndPlayTween(currentRoomIndex)
-    end
-
-    local function createAndPlayTween(nextRoomIndex)
+    local function createAndPlayTween(nextRoomIndex, onRebound)
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
@@ -38,27 +32,33 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
         local isLastRoom = (backwards and currentRoomIndex == 1) or (not backwards and currentRoomIndex == #rooms)
 
         if isLastRoom and rebound then
-            reboundEntity()
+            onRebound()
         elseif isLastRoom then
             object:Destroy()
         else
             tween.Completed:Connect(function()
                 local nextIndex = (backwards and currentRoomIndex > 1) and currentRoomIndex - 1 or (not backwards and currentRoomIndex % #rooms + 1) or #rooms
-                createAndPlayTween(nextIndex)
+                createAndPlayTween(nextIndex, onRebound)
             end)
         end
     end
 
     task.wait(delay)
 
+    local function reboundEntity()
+        backwards = not backwards
+        currentRoomIndex = backwards and #rooms or 1
+        createAndPlayTween(currentRoomIndex, reboundEntity)
+    end
+
     if backwards then
         local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame})
         backwardstween:Play()
         backwardstween.Completed:Connect(function()
-            createAndPlayTween(currentRoomIndex)
+            createAndPlayTween(currentRoomIndex, reboundEntity)
         end)
     else
-        createAndPlayTween(currentRoomIndex)
+        createAndPlayTween(currentRoomIndex, reboundEntity)
     end
 
     part.Touched:Connect(function(otherpart)
