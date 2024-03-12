@@ -51,13 +51,13 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     task.wait(delay)
 
     if backwards then
-        local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame}):Play()
+        local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame})
+        backwardstween:Play()
         backwardstween.Completed:Connect(function()
             createAndPlayTween()
         end)
     else
         createAndPlayTween()
-        return
     end
 
     
