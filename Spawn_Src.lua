@@ -1,6 +1,6 @@
 local Entity = {}
 
-function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebound)
+function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
     local rooms = workspace.CurrentRooms:GetChildren()
@@ -10,7 +10,11 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
 
     object.Parent = workspace
 
-    part.CFrame = (backwards and rooms[#rooms].Door.PrimaryPart or rooms[currentRoomIndex].PrimaryPart).CFrame
+    if not backwards then
+        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
+    else
+        part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
+    end
 
     local tweenInfo = TweenInfo.new(
         tweenDuration,
@@ -21,7 +25,15 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
         0
     )
 
-    local function createAndPlayTween(nextRoomIndex, onRebound)
+    local function createAndPlayTween()
+        local nextRoomIndex
+
+        if backwards then
+            nextRoomIndex = currentRoomIndex > 1 and currentRoomIndex - 1 or #rooms
+        else
+            nextRoomIndex = currentRoomIndex % #rooms + 1
+        end
+
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
@@ -29,36 +41,23 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
 
         currentRoomIndex = nextRoomIndex
 
-        local isLastRoom = (backwards and currentRoomIndex == 1) or (not backwards and currentRoomIndex == #rooms)
-
-        if isLastRoom and rebound then
-            onRebound()
-        elseif isLastRoom then
+        if (backwards and nextRoomIndex == #rooms) or (not backwards and nextRoomIndex == 1) then
             object:Destroy()
         else
-            tween.Completed:Connect(function()
-                local nextIndex = (backwards and currentRoomIndex > 1) and currentRoomIndex - 1 or (not backwards and currentRoomIndex % #rooms + 1) or #rooms
-                createAndPlayTween(nextIndex, onRebound)
-            end)
+            tween.Completed:Connect(createAndPlayTween)
         end
     end
 
     task.wait(delay)
 
-    local function reboundEntity()
-        backwards = not backwards
-        currentRoomIndex = backwards and #rooms or 1
-        createAndPlayTween(currentRoomIndex, reboundEntity)
-    end
-
     if backwards then
         local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame})
         backwardstween:Play()
         backwardstween.Completed:Connect(function()
-            createAndPlayTween(currentRoomIndex, reboundEntity)
+            createAndPlayTween()
         end)
     else
-        createAndPlayTween(currentRoomIndex, reboundEntity)
+        createAndPlayTween()
     end
 
     part.Touched:Connect(function(otherpart)
@@ -67,6 +66,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
                 game:GetService("Players").LocalPlayer.Character.Humanoid.Health = 0
             else
                 print("cannot kill")
+                return
             end
         end
     end)
