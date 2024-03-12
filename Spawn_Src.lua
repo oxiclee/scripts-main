@@ -9,12 +9,12 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local currentRoomIndex = backwards and #rooms or 1
 
     object.Parent = workspace
+
     if not backwards then
         part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
     else
         part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
     end
-   
 
     local tweenInfo = TweenInfo.new(
         tweenDuration,
@@ -59,8 +59,6 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     else
         createAndPlayTween()
     end
-
-    
 
     part.Touched:Connect(function(otherpart)
         if otherpart.Parent == game:GetService("Players").LocalPlayer.Character then
