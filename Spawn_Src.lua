@@ -21,9 +21,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
         0
     )
 
-    local function createAndPlayTween()
-        local nextRoomIndex = (backwards and currentRoomIndex > 1) and currentRoomIndex - 1 or (not backwards and currentRoomIndex % #rooms + 1) or #rooms
-
+    local function createAndPlayTween(nextRoomIndex)
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
         local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
@@ -31,17 +29,24 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
 
         currentRoomIndex = nextRoomIndex
 
-        local isLastRoom = (backwards and nextRoomIndex == 1) or (not backwards and nextRoomIndex == #rooms)
+        local isLastRoom = (backwards and currentRoomIndex == 1) or (not backwards and currentRoomIndex == #rooms)
 
         if isLastRoom and rebound then
-            backwards = not backwards
-            currentRoomIndex = backwards and #rooms or 1
-            createAndPlayTween()
+            reboundEntity()
         elseif isLastRoom then
             object:Destroy()
         else
-            tween.Completed:Connect(createAndPlayTween)
+            tween.Completed:Connect(function()
+                local nextIndex = (backwards and currentRoomIndex > 1) and currentRoomIndex - 1 or (not backwards and currentRoomIndex % #rooms + 1) or #rooms
+                createAndPlayTween(nextIndex)
+            end)
         end
+    end
+
+    local function reboundEntity()
+        backwards = not backwards
+        currentRoomIndex = backwards and #rooms or 1
+        createAndPlayTween(currentRoomIndex)
     end
 
     task.wait(delay)
@@ -50,10 +55,10 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
         local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame})
         backwardstween:Play()
         backwardstween.Completed:Connect(function()
-            createAndPlayTween()
+            createAndPlayTween(currentRoomIndex)
         end)
     else
-        createAndPlayTween()
+        createAndPlayTween(currentRoomIndex)
     end
 
     part.Touched:Connect(function(otherpart)
