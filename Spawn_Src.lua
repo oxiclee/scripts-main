@@ -21,6 +21,12 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
         0
     )
 
+    local function reboundEntity()
+        backwards = not backwards
+        currentRoomIndex = backwards and #rooms or 1
+        createAndPlayTween(currentRoomIndex)
+    end
+
     local function createAndPlayTween(nextRoomIndex)
         local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
 
@@ -41,12 +47,6 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
                 createAndPlayTween(nextIndex)
             end)
         end
-    end
-
-    local function reboundEntity()
-        backwards = not backwards
-        currentRoomIndex = backwards and #rooms or 1
-        createAndPlayTween(currentRoomIndex)
     end
 
     task.wait(delay)
