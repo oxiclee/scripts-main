@@ -42,7 +42,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
         tween.Completed:Connect(function()
             if not backwards then
-                if nextroomindex >= #rooms-1 then
+                if nextroomindex >= #rooms then
                     object:Destroy()
                 else
                     currentRoomIndex = nextroomindex
