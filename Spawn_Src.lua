@@ -3,14 +3,15 @@ local Entity = {}
 function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
-    local rooms = workspace.CurrentRooms:GetChildren()
+    local roomfolder = workspace.CurrentRooms
+    local rooms = roomfolder:GetChildren()
     local ts = game:GetService("TweenService")
 
     local currentRoomIndex = nil
 
     if backwards then
         currentRoomIndex = #rooms
-        part.CFrame = rooms[currentRoomIndex].Door.PrimaryPart.CFrame
+        part.CFrame = roomfolder[tostring(currentRoomIndex)].Door.PrimaryPart.CFrame
     else
         currentRoomIndex = 1
         part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
