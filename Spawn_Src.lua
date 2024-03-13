@@ -46,10 +46,13 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
         tween.Completed:Connect(function()
             if not backwards then
                 if nextroomindex >= #rooms then
-                    if rebounds then  -- Corrected variable name
+                    if rebounds then 
                         backwards = not backwards
-                        currentRoomIndex = #rooms
-                        part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
+                        if not backwards then
+                            currentRoomIndex = 1
+                        else
+                            currentRoomIndex = #rooms
+                        end
                         createAndPlayTween()
                     else
                          object:Destroy() 
@@ -60,7 +63,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
                 end
             else
                 if nextroomindex <= 1 then
-                    if rebounds then  -- Corrected variable name
+                    if rebounds then 
                         currentreboundcount = currentreboundcount+1
                         if currentreboundcount > reboundcount then
                             object:Destroy()  
