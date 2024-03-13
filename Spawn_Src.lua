@@ -13,7 +13,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
     else
         currentRoomIndex = 1
-        part.CFrame = rooms[currentRoomIndex].Door.PrimaryPart.CFrame
+        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
     end
 
     object.Parent = workspace
