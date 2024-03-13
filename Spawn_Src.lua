@@ -1,11 +1,13 @@
 local Entity = {}
 
-function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
+function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebounds, reboundcount)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
     local roomfolder = workspace.CurrentRooms
     local rooms = roomfolder:GetChildren()
     local ts = game:GetService("TweenService")
+
+    local currentreboundcount = 0
 
     local currentRoomIndex = nil
 
@@ -44,14 +46,29 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         tween.Completed:Connect(function()
             if not backwards then
                 if nextroomindex >= #rooms then
-                    object:Destroy()
+                    if rebound then
+                        backwards = not backwards
+                        createAndPlayTween()
+                    else
+                         object:Destroy() 
+                    end
                 else
                     currentRoomIndex = nextroomindex
                     createAndPlayTween()
                 end
             else
                 if nextroomindex <= 1 then
-                    object:Destroy()
+                    if rebound then
+                        currentreboundcount = currentreboundcount+1
+                        if currentreboundcount > reboundcount then
+                            object:Destroy()  
+                        else        
+                        backwards = not backwards
+                        createAndPlayTween()
+                        end
+                    else
+                        object:Destroy()    
+                    end
                 else
                     currentRoomIndex = nextroomindex
                     createAndPlayTween()
