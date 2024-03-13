@@ -6,15 +6,17 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local rooms = workspace.CurrentRooms:GetChildren()
     local ts = game:GetService("TweenService")
 
-    local currentRoomIndex = backwards and #rooms or 1
+    local currentRoomIndex = nil
+
+    if backwards then
+        currentroomindex = #rooms
+        part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
+    else
+        currentroomindex = 1
+        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
+    end
 
     object.Parent = workspace
-
-    if not backwards then
-        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
-    else
-        part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
-    end
 
     local tweenInfo = TweenInfo.new(
         tweenDuration,
@@ -26,39 +28,37 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     )
 
     local function createAndPlayTween()
-        local nextRoomIndex
+        local nextroomindex = nil
 
-        if backwards then
-            nextRoomIndex = currentRoomIndex > 1 and currentRoomIndex - 1 or #rooms
+        if not backwards then
+            nextroomindex = currentroomindex + 1
         else
-            nextRoomIndex = currentRoomIndex % #rooms + 1
+            nextroomindex = currentroomindex - 1
         end
-
-        local nextRoomCFrame = rooms[nextRoomIndex].PrimaryPart.CFrame
-
-        local tween = ts:Create(part, tweenInfo, { CFrame = nextRoomCFrame })
+        
+        local tween = ts:Create(part, tweenInfo, {CFrame = rooms[nextroomindex].PrimaryPart.CFrame})
         tween:Play()
 
-        currentRoomIndex = nextRoomIndex
-
-        if (backwards and nextRoomIndex == #rooms) or (not backwards and nextRoomIndex == 1) then
-            object:Destroy()
-        else
-            tween.Completed:Connect(createAndPlayTween)
-        end
-    end
-
-    task.wait(delay)
-
-    if backwards then
-        local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame})
-        backwardstween:Play()
-        backwardstween.Completed:Connect(function()
+        tween.Completed:Connect(function()
+            if not backwards then
+                if nextroomindex >= #rooms then
+                        object:Destroy()
+                else
+                    nextroomindex = currentroomindex + 1
+                end
+            else
+                if nextroomindex <= 1 then
+                    object:Destroy()
+                else
+                    nextroomindex = currentroomindex - 1
+                end
+            end
             createAndPlayTween()
         end)
-    else
-        createAndPlayTween()
+        
     end
+    task.wait(delay)
+    createAndPlayTween()
 
     part.Touched:Connect(function(otherpart)
         if otherpart.Parent == game:GetService("Players").LocalPlayer.Character then
