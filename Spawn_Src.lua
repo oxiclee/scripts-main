@@ -49,7 +49,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
                     createAndPlayTween()
                 end
             else
-                if nextroomindex < 1 then
+                if nextroomindex <= 1 then
                     object:Destroy()
                 else
                     currentRoomIndex = nextroomindex
