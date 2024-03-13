@@ -12,8 +12,8 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         currentRoomIndex = #rooms
         part.CFrame = rooms[tostring(#rooms)].Door.PrimaryPart.CFrame
     else
-        currentRoomIndex = rooms[1]
-        part.CFrame = currentRoomIndex.PrimaryPart.CFrame
+        currentRoomIndex = 1
+        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
     end
 
     object.Parent = workspace
@@ -36,7 +36,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
             nextroomindex = currentRoomIndex - 1
         end
         
-        local tween = ts:Create(part, tweenInfo, {CFrame = rooms[tostring(nextroomindex)].Door.PrimaryPart.CFrame})
+        local tween = ts:Create(part, tweenInfo, {CFrame = rooms[nextroomindex].Door.PrimaryPart.CFrame})
         tween:Play()
 
         tween.Completed:Connect(function()
