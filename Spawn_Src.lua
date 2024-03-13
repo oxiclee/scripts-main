@@ -9,10 +9,10 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local currentRoomIndex = nil
 
     if backwards then
-        currentroomindex = #rooms
+        currentRoomIndex = #rooms
         part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
     else
-        currentroomindex = 1
+        currentRoomIndex = 1
         part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
     end
 
@@ -58,7 +58,15 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         
     end
     task.wait(delay)
-    createAndPlayTween()
+    if not backwards then
+        createAndPlayTween()
+    else
+        local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame})
+        backwardstween:Play()
+        backwardstween.Completed:Connect(function()
+            createAndPlayTween()
+        end)
+    end
 
     part.Touched:Connect(function(otherpart)
         if otherpart.Parent == game:GetService("Players").LocalPlayer.Character then
