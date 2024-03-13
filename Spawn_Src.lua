@@ -8,9 +8,9 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
     local ts = game:GetService("TweenService")
 
     local currentreboundcount = 0
-
     local currentRoomIndex = nil
 
+    
     if backwards then
         currentRoomIndex = #rooms
         part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
@@ -46,8 +46,10 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
         tween.Completed:Connect(function()
             if not backwards then
                 if nextroomindex >= #rooms then
-                    if rebound then
+                    if rebounds then  -- Corrected variable name
                         backwards = not backwards
+                        currentRoomIndex = #rooms
+                        part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
                         createAndPlayTween()
                     else
                          object:Destroy() 
@@ -58,7 +60,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards, rebou
                 end
             else
                 if nextroomindex <= 1 then
-                    if rebound then
+                    if rebounds then  -- Corrected variable name
                         currentreboundcount = currentreboundcount+1
                         if currentreboundcount > reboundcount then
                             object:Destroy()  
