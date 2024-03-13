@@ -31,9 +31,9 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         local nextroomindex = nil
 
         if not backwards then
-            nextroomindex = currentroomindex + 1
+            nextroomindex = currentRoomIndex + 1
         else
-            nextroomindex = currentroomindex - 1
+            nextroomindex = currentRoomIndex - 1
         end
         
         local tween = ts:Create(part, tweenInfo, {CFrame = rooms[nextroomindex].PrimaryPart.CFrame})
@@ -42,22 +42,23 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         tween.Completed:Connect(function()
             if not backwards then
                 if nextroomindex >= #rooms then
-                        object:Destroy()
+                    object:Destroy()
                 else
-                    nextroomindex = currentroomindex + 1
+                    nextroomindex = currentRoomIndex + 1
                 end
             else
                 if nextroomindex <= 1 then
                     object:Destroy()
                 else
-                    nextroomindex = currentroomindex - 1
+                    nextroomindex = currentRoomIndex - 1
                 end
             end
             createAndPlayTween()
         end)
-        
     end
+
     task.wait(delay)
+
     if not backwards then
         createAndPlayTween()
     else
