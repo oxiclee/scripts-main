@@ -6,14 +6,14 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local rooms = workspace.CurrentRooms:GetChildren()
     local ts = game:GetService("TweenService")
 
-    local currentRoomIndex = 1
+    local currentRoomIndex = nil
 
     if backwards then
         currentRoomIndex = #rooms
-        part.CFrame = rooms[#rooms].Door.PrimaryPart.CFrame
+        part.CFrame = rooms[tostring(#rooms)].Door.PrimaryPart.CFrame
     else
         currentRoomIndex = 1
-        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
+        part.CFrame = rooms[tostring(currentRoomIndex)].PrimaryPart.CFrame
     end
 
     object.Parent = workspace
@@ -36,12 +36,12 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
             nextroomindex = currentRoomIndex - 1
         end
         
-        local tween = ts:Create(part, tweenInfo, {CFrame = rooms[nextroomindex].Door.PrimaryPart.CFrame})
+        local tween = ts:Create(part, tweenInfo, {CFrame = rooms[tostring(nextroomindex)].Door.PrimaryPart.CFrame})
         tween:Play()
 
         tween.Completed:Connect(function()
             if not backwards then
-                if nextroomindex >= #rooms then
+                if nextroomindex >= #rooms-1 then
                     object:Destroy()
                 else
                     currentRoomIndex = nextroomindex
