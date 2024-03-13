@@ -10,7 +10,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
     if backwards then
         currentRoomIndex = #rooms
-        part.CFrame = rooms[tostring(#rooms)].Door.PrimaryPart.CFrame
+        part.CFrame = rooms[currentRoomIndex].Door.PrimaryPart.CFrame
     else
         currentRoomIndex = 1
         part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
