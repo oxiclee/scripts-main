@@ -29,6 +29,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     )
 
     local function createAndPlayTween()
+        rooms = roomfolder:GetChildren()
         local nextroomindex = nil
 
         if not backwards then
