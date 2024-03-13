@@ -12,7 +12,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         currentRoomIndex = #rooms
         part.CFrame = rooms[tostring(#rooms)].Door.PrimaryPart.CFrame
     else
-        currentRoomIndex = 1
+        currentRoomIndex = rooms[1]
         part.CFrame = rooms[tostring(currentRoomIndex)].PrimaryPart.CFrame
     end
 
