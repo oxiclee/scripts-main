@@ -3,8 +3,7 @@ local Entity = {}
 function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
-    local roomfolder = workspace.CurrentRooms
-    local rooms = roomfolder:GetChildren()
+    local rooms = workspace.CurrentRooms:GetChildren()
     local ts = game:GetService("TweenService")
 
     local currentRoomIndex = nil
@@ -37,7 +36,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
             nextroomindex = currentRoomIndex - 1
         end
         
-        local tween = ts:Create(part, tweenInfo, {CFrame = rooms[nextroomindex].PrimaryPart.CFrame})
+        local tween = ts:Create(part, tweenInfo, {CFrame = rooms[nextroomindex].Door.PrimaryPart.CFrame})
         tween:Play()
 
         tween.Completed:Connect(function()
@@ -64,7 +63,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     if not backwards then
         createAndPlayTween()
     else
-        local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame})
+        local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].Door.PrimaryPart.CFrame})
         backwardstween:Play()
         backwardstween.Completed:Connect(function()
             createAndPlayTween()
