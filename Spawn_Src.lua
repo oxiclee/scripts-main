@@ -33,7 +33,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
         for i, node in ipairs(pathfindNodes) do
             -- Adjusting the Y component of the node's CFrame
-            local nodeCFrame = node.CFrame + Vector3.new(0, 5, 0)
+            local nodeCFrame = node.CFrame + Vector3.new(0, 2, 0)
             
             local nodeTween = ts:Create(part, tweenInfo, {CFrame = nodeCFrame})
             table.insert(tweenChain, nodeTween)
