@@ -48,7 +48,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
         local nextroomindex = currentRoomIndex + 1
 
-        if not backwards and nextroomindex >= #rooms then
+        if not backwards and nextroomindex > #rooms then
             object:Destroy()
         else
             currentRoomIndex = nextroomindex
