@@ -33,14 +33,11 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
         for i, node in ipairs(pathfindNodes) do
             -- Adjusting the Y component of the node's CFrame
-            local nodeCFrame = node.CFrame + Vector3.new(0, 2, 0)
+            local nodeCFrame = node.CFrame + Vector3.new(0, 5, 0)
             
             local nodeTween = ts:Create(part, tweenInfo, {CFrame = nodeCFrame})
             table.insert(tweenChain, nodeTween)
         end
-
-        local primaryPartTween = ts:Create(part, tweenInfo, {CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame})
-        table.insert(tweenChain, primaryPartTween)
 
         for i, tween in ipairs(tweenChain) do
             tween:Play()
@@ -61,15 +58,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
     task.wait(delay)
 
-    if not backwards then
-        createAndPlayTween()
-    else
-        local backwardstween = ts:Create(part, tweenInfo, {CFrame = rooms[#rooms].PrimaryPart.CFrame})
-        backwardstween:Play()
-        backwardstween.Completed:Connect(function()
-            createAndPlayTween()
-        end)
-    end
+    createAndPlayTween()
 
     part.Touched:Connect(function(otherpart)
         if otherpart.Parent == game:GetService("Players").LocalPlayer.Character then
