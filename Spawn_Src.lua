@@ -40,7 +40,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         end
 
         for i, node in ipairs(nodes) do
-            local cf = node.CFrame + Vector3.new(0, 1.5, 0)
+            local cf = node.CFrame + Vector3.new(0, 1, 0)
             local tween = ts:Create(part, tweenInfo, {CFrame = cf})
 
             table.insert(chain, tween)
