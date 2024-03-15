@@ -32,7 +32,11 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         local tweenChain = {}
 
         for i, node in ipairs(pathfindNodes) do
-            local nodeTween = ts:Create(part, tweenInfo, {CFrame = node.CFrame})
+            -- Adjusting the Y component of the node's CFrame
+            local nodePosition = node.Position + Vector3.new(0, 5, 0)
+            local nodeCFrame = CFrame.new(nodePosition)
+            
+            local nodeTween = ts:Create(part, tweenInfo, {CFrame = nodeCFrame})
             table.insert(tweenChain, nodeTween)
         end
 
@@ -46,12 +50,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
             end
         end
 
-        local nextroomindex = currentRoomIndex
-        if backwards then
-            nextroomindex = currentRoomIndex - 1
-        else
-            nextroomindex = currentRoomIndex + 1
-        end
+        local nextroomindex = backwards and currentRoomIndex - 1 or currentRoomIndex + 1
 
         if (not backwards and nextroomindex >= #rooms) or (backwards and nextroomindex <= 0) then
             object:Destroy()
