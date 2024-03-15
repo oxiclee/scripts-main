@@ -28,34 +28,32 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     )
 
     local function createAndPlayTween()
-        local nextroomindex = nil
+        local pathfindNodes = rooms[currentRoomIndex].PathfindNodes:GetChildren()
+        local tweenChain = {}
 
-        if not backwards then
-            nextroomindex = currentRoomIndex + 1
-        else
-            nextroomindex = currentRoomIndex - 1
+        for i, node in ipairs(pathfindNodes) do
+            local nodeTween = ts:Create(part, tweenInfo, {CFrame = node.CFrame})
+            table.insert(tweenChain, nodeTween)
         end
-        
-        local tween = ts:Create(part, tweenInfo, {CFrame = rooms[nextroomindex].PrimaryPart.CFrame})
-        tween:Play()
 
-        tween.Completed:Connect(function()
-            if not backwards then
-                if nextroomindex >= #rooms-1 then
-                    object:Destroy()
-                else
-                    currentRoomIndex = nextroomindex
-                    createAndPlayTween()
-                end
-            else
-                if nextroomindex <= 1 then
-                    object:Destroy()
-                else
-                    currentRoomIndex = nextroomindex
-                    createAndPlayTween()
-                end
+        local primaryPartTween = ts:Create(part, tweenInfo, {CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame})
+        table.insert(tweenChain, primaryPartTween)
+
+        for i, tween in ipairs(tweenChain) do
+            tween:Play()
+            if i < #tweenChain then
+                tween.Completed:Wait()
             end
-        end)
+        end
+
+        local nextroomindex = backwards and currentRoomIndex - 1 or currentRoomIndex + 1
+
+        if (not backwards and nextroomindex >= #rooms) or (backwards and nextroomindex <= 0) then
+            object:Destroy()
+        else
+            currentRoomIndex = nextroomindex
+            createAndPlayTween()
+        end
     end
 
     task.wait(delay)
