@@ -31,6 +31,14 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         local nodes = rooms[currentRoomIndex].PathfindNodes:GetChildren()
         local chain = {}
 
+        local nextroomindex = nil
+
+        if not backwards then
+            nextroomindex = currentRoomIndex + 1
+        else
+            nextroomindex = currentRoomIndex - 1
+        end
+
         for i, node in ipairs(nodes) do
             local cf = node.CFrame + Vector3.new(0, 1, 0)
             local tween = ts:Create(part, tweenInfo, {CFrame = cf})
@@ -46,7 +54,6 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
             end
         end
 
-        local nextroomindex = currentRoomIndex + 1
 
         if not backwards and nextroomindex > #rooms then
             object:Destroy()
