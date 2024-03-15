@@ -49,7 +49,7 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
         for i, tween in pairs(chain) do
             tween:Play()
-            if i > #chain then
+            if i < #chain then
                 tween.Completed:Wait()
             end
         end
