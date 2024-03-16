@@ -1,10 +1,9 @@
 local Entity = {}
 
-function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
+function Entity.new(asset, lerpDuration, canEntityKill, delay, backwards)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
     local rooms = workspace.CurrentRooms:GetChildren()
-    local ts = game:GetService("TweenService")
 
     local currentRoomIndex = nil
 
@@ -18,18 +17,8 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
     object.Parent = workspace
 
-    local tweenInfo = TweenInfo.new(
-        tweenDuration,
-        Enum.EasingStyle.Linear,
-        Enum.EasingDirection.Out,
-        0,
-        false,
-        0
-    )
-
-    local function createAndPlayTween()
+    local function createAndPlayLerp()
         local nodes = rooms[currentRoomIndex].PathfindNodes:GetChildren()
-        local chain = {}
 
         local nextroomindex = nil
 
@@ -39,33 +28,37 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
             nextroomindex = currentRoomIndex - 1
         end
 
-        for i, node in ipairs(nodes) do
-            local cf = node.CFrame + Vector3.new(0, 2, 0)
-            local tween = ts:Create(part, tweenInfo, {CFrame = cf})
+        local nextNodeIndex = 1
 
-            table.insert(chain, tween)
-            
-        end
+        local function lerpToNextNode()
+            local targetCF = nodes[nextNodeIndex].CFrame + Vector3.new(0, 2, 0)
+            local startTime = tick()
+            local endTime = startTime + lerpDuration
 
-        for i, tween in ipairs(chain) do
-            tween:Play()
-            if i < #chain then
-                tween.Completed:Wait()
+            while tick() < endTime do
+                local alpha = (tick() - startTime) / lerpDuration
+                part.CFrame = CFrame.new(part.Position:Lerp(targetCF.Position, alpha), targetCF.LookVector)
+                task.wait()
             end
+
+            nextNodeIndex = nextNodeIndex + 1
         end
 
+        while nextNodeIndex <= #nodes do
+            lerpToNextNode()
+        end
 
         if (not backwards and nextroomindex > #rooms) or (backwards and nextroomindex < 1) then
             object:Destroy()
         else
             currentRoomIndex = nextroomindex
-            createAndPlayTween()
+            createAndPlayLerp()
         end
     end
 
     task.wait(delay)
 
-    createAndPlayTween()
+    createAndPlayLerp()
 
     part.Touched:Connect(function(otherpart)
         if otherpart.Parent == game:GetService("Players").LocalPlayer.Character then
