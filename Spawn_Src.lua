@@ -54,7 +54,7 @@ function Entity.new(asset, minTweenDuration, maxTweenDuration, canEntityKill, de
             end
         end
 
-        if (not backwards and nextroomindex > #rooms) or (backwards and nextroomindex < 1) then
+        if (not backwards and nextroomindex > #rooms) or (backwards and nextroomindex <= 1) then
             object:Destroy()
         else
             currentRoomIndex = nextroomindex
