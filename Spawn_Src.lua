@@ -1,6 +1,6 @@
 local Entity = {}
 
-function Entity.new(asset, minTweenDuration, maxTweenDuration, canEntityKill, delay, backwards)
+function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
     local rooms = workspace.CurrentRooms:GetChildren()
@@ -18,10 +18,14 @@ function Entity.new(asset, minTweenDuration, maxTweenDuration, canEntityKill, de
 
     object.Parent = workspace
 
-    local function calculateTweenDuration(startPosition, endPosition)
-        local distance = (endPosition - startPosition).magnitude
-        return math.clamp(distance / 10, minTweenDuration, maxTweenDuration)
-    end
+    local tweenInfo = TweenInfo.new(
+        tweenDuration,
+        Enum.EasingStyle.Linear,
+        Enum.EasingDirection.Out,
+        0,
+        false,
+        0
+    )
 
     local function createAndPlayTween()
         local nodes = rooms[currentRoomIndex].PathfindNodes:GetChildren()
@@ -36,15 +40,11 @@ function Entity.new(asset, minTweenDuration, maxTweenDuration, canEntityKill, de
         end
 
         for i, node in ipairs(nodes) do
-            local targetCFrame = node.CFrame + Vector3.new(0, 2, 0)
-            local tweenDuration = calculateTweenDuration(part.Position, targetCFrame.p)
-            local tweenInfo = TweenInfo.new(tweenDuration, Enum.EasingStyle.Linear)
-            local properties = {
-                CFrame = targetCFrame
-            }
-            local tween = ts:Create(part, tweenInfo, properties)
+            local cf = node.CFrame + Vector3.new(0, 2, 0)
+            local tween = ts:Create(part, tweenInfo, {CFrame = cf})
 
             table.insert(chain, tween)
+            
         end
 
         for i, tween in ipairs(chain) do
@@ -54,7 +54,8 @@ function Entity.new(asset, minTweenDuration, maxTweenDuration, canEntityKill, de
             end
         end
 
-        if (not backwards and nextroomindex > #rooms) or (backwards and nextroomindex <= 1) then
+
+        if (not backwards and nextroomindex > #rooms) or (backwards and nextroomindex < 1) then
             object:Destroy()
         else
             currentRoomIndex = nextroomindex
