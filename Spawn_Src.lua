@@ -41,16 +41,16 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
         for i, node in ipairs(nodes) do
             local cf = node.CFrame + Vector3.new(0, 2, 0)
-            local tween = ts:Create(part, tweenInfo, {CFrame = cf})
+            local tween = part.CFrame:lerp(cf, tweenDuration/100)
 
             table.insert(chain, tween)
             
         end
 
         for i, tween in ipairs(chain) do
-            tween:Play()
+            tween()
             if i < #chain then
-                tween.Completed:Wait()
+                Wait()
             end
         end
 
