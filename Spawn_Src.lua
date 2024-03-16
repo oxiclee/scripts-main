@@ -1,10 +1,7 @@
-local Entity = {}
-
 function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
     local rooms = workspace.CurrentRooms:GetChildren()
-    local ts = game:GetService("TweenService")
 
     local currentRoomIndex = nil
 
@@ -18,18 +15,8 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
 
     object.Parent = workspace
 
-    local tweenInfo = TweenInfo.new(
-        tweenDuration,
-        Enum.EasingStyle.Linear,
-        Enum.EasingDirection.Out,
-        0,
-        false,
-        0
-    )
-
     local function createAndPlayTween()
         local nodes = rooms[currentRoomIndex].PathfindNodes:GetChildren()
-        local chain = {}
 
         local nextroomindex = nil
 
@@ -40,20 +27,17 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
         end
 
         for i, node in ipairs(nodes) do
-            local cf = node.CFrame + Vector3.new(0, 2, 0)
-            local tween = part.CFrame:lerp(cf, tweenDuration/100)
+            local targetCFrame = node.CFrame + Vector3.new(0, 2, 0)
+            local startTime = tick()
+            local elapsedTime = 0
 
-            table.insert(chain, tween)
-            
-        end
-
-        for i, tween in ipairs(chain) do
-            tween()
-            if i < #chain then
-                Wait()
+            while elapsedTime < tweenDuration do
+                local alpha = math.min(1, elapsedTime / tweenDuration)
+                part.CFrame = part.CFrame:lerp(targetCFrame, alpha)
+                elapsedTime = tick() - startTime
+                task.wait() 
             end
         end
-
 
         if (not backwards and nextroomindex > #rooms) or (backwards and nextroomindex < 1) then
             object:Destroy()
@@ -64,7 +48,6 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     end
 
     task.wait(delay)
-
     createAndPlayTween()
 
     part.Touched:Connect(function(otherpart)
@@ -73,7 +56,6 @@ function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
                 game:GetService("Players").LocalPlayer.Character.Humanoid.Health = 0
             else
                 print("cannot kill")
-                return
             end
         end
     end)
