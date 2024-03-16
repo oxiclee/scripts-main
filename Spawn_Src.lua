@@ -1,3 +1,5 @@
+local Entity = {}
+
 function Entity.new(asset, tweenDuration, canEntityKill, delay, backwards)
     local object = game:GetObjects(asset)[1]
     local part = object.PrimaryPart
