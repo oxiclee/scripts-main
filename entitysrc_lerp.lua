@@ -40,11 +40,11 @@ function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
     end
 
     ModuleEvents = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events)
-    ModuleEvents.flicker(workspace.CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value],flickerduration)
+    ModuleEvents.flicker(workspace.CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value], flickerduration)
 
     task.wait(delay)
     
-    for i = startNodeIndex, endNodeIndex, step do
+    for i = startNodeIndex, endNodeIndex - step, step do
         local nodeStart = nodes[i]
         local nodeEnd = nodes[i + step]
         local distance = distanceBetweenCFrames(nodeStart, nodeEnd)
