@@ -17,7 +17,7 @@ function Entity.new(obj, speedFactor, reverses)
         if cframe1 and cframe2 then
             return (cframe1.Position - cframe2.Position).magnitude
         else
-            return 0 
+            return 0
         end
     end
 
@@ -41,6 +41,7 @@ function Entity.new(obj, speedFactor, reverses)
         while tick() - startTime < distance / speedFactor do
             local t = (tick() - startTime) / (distance / speedFactor)
             local lerpedCFrame = nodeStart:Lerp(nodeEnd, t)
+            lerpedCFrame = lerpedCFrame * CFrame.new(0, 2, 0)
             p.CFrame = lerpedCFrame
             wait()
         end
