@@ -47,7 +47,7 @@ function Entity.new(obj, speedFactor, reverses, delay, flicktime)
             local t = (tick() - startTime) / (distance / speedFactor)
             local lerpedCFrame = nodeStart:Lerp(nodeEnd, t)
             p.CFrame = lerpedCFrame
-            wait()
+            wait(0.1)
         end
     end
 
