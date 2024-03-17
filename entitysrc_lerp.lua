@@ -4,13 +4,6 @@ function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
     local object = game:GetObjects(obj)[1]
     object.Parent = workspace
     local p = object.PrimaryPart
-
-    if not reverses then
-        p.CFrame = workspace.CurrentRooms:GetChildren()[1].PrimaryPart.CFrame
-    else
-        local BAKrooms = workspace.CurrentRooms:GetChildren()
-        p.CFrame = BAKrooms[#BAKrooms].Door.PrimaryPart.CFrame
-    end
     
     local nodes = {}
 
