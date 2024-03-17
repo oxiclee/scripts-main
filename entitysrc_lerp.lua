@@ -1,10 +1,10 @@
 local Entity = {}
 
-function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
+function Entity.new(obj, speedFactor, reverses, delay, flicktime)
     local object = game:GetObjects(obj)[1]
     object.Parent = workspace
     local p = object.PrimaryPart
-    
+
     local nodes = {}
 
     for _, v in ipairs(workspace:GetDescendants()) do
@@ -14,11 +14,9 @@ function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
     end
 
     local function distanceBetweenCFrames(cframe1, cframe2)
-        if cframe1 and cframe2 then
-            return (cframe1.Position - cframe2.Position).magnitude
-        else
-            return 0
-        end
+        local position1 = cframe1.Position
+        local position2 = cframe2.Position
+        return (position1 - position2).magnitude
     end
 
     local startNodeIndex, endNodeIndex, step
@@ -32,12 +30,12 @@ function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
         step = 1
     end
 
-    ModuleEvents = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events)
-    ModuleEvents.flicker(workspace.CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value], flickerduration)
-
-    task.wait(delay)
+    local ModuleEvents = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events)
+    ModuleEvents.flicker(workspace.CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value],3)
     
-    for i = startNodeIndex, endNodeIndex - step, step do
+    task.wait(delay)
+
+    for i = startNodeIndex, endNodeIndex, step do
         local nodeStart = nodes[i]
         local nodeEnd = nodes[i + step]
         local distance = distanceBetweenCFrames(nodeStart, nodeEnd)
@@ -46,7 +44,6 @@ function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
         while tick() - startTime < distance / speedFactor do
             local t = (tick() - startTime) / (distance / speedFactor)
             local lerpedCFrame = nodeStart:Lerp(nodeEnd, t)
-            lerpedCFrame = lerpedCFrame + Vector3.new(0, 2, 0)
             p.CFrame = lerpedCFrame
             wait()
         end
