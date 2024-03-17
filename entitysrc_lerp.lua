@@ -1,6 +1,6 @@
 local Entity = {}
 
-function Entity.new(obj, speedFactor, reverses)
+function Entity.new(obj, speedFactor, delay, reverses)
     local object = game:GetObjects(obj)[1]
     object.Parent = workspace
     local p = object.PrimaryPart
@@ -32,6 +32,8 @@ function Entity.new(obj, speedFactor, reverses)
         step = 1
     end
 
+    task.wait(delay)
+    
     for i = startNodeIndex, endNodeIndex, step do
         local nodeStart = nodes[i]
         local nodeEnd = nodes[i + step]
