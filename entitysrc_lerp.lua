@@ -14,11 +14,13 @@ function Entity.new(obj, speedFactor, reverses, delay, flicktime)
     end
 
     local function distanceBetweenCFrames(cframe1, cframe2)
-        local position1 = cframe1.Position
-        local position2 = cframe2.Position
-        return (position1 - position2).magnitude
+        if cframe1 and cframe2 then
+            return (cframe1.Position - cframe2.Position).magnitude
+        else
+            return 0
+        end
     end
-
+    
     local startNodeIndex, endNodeIndex, step
     if reverses then
         startNodeIndex = #nodes
