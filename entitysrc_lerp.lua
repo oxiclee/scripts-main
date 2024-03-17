@@ -37,7 +37,7 @@ function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
 
     task.wait(delay)
     
-    for i = startNodeIndex, endNodeIndex - step, step do
+    for i = startNodeIndex, endNodeIndex, step do
         local nodeStart = nodes[i]
         local nodeEnd = nodes[i + step]
         local distance = distanceBetweenCFrames(nodeStart, nodeEnd)
