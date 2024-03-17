@@ -7,6 +7,8 @@ function module.new(obj, speedFactor)
 
     local nodes = {}
 
+    nodes = {}
+
     for _, v in ipairs(workspace:GetDescendants()) do
         if v.Parent.Name == "PathfindNodes" and v.Parent:IsA("Folder") then
             table.insert(nodes, v)
