@@ -1,13 +1,11 @@
 local module = {}
 
-function module.new(obj, speedFactor)
+function module.new(obj, speedFactor, reverses, delay, flickerlength)
     local obj2 = game:GetObjects(obj)[1]
     obj2.Parent = workspace
     local p = obj2.PrimaryPart
 
     local nodes = {}
-
-    nodes = {}
 
     for _, v in ipairs(workspace:GetDescendants()) do
         if v.Parent.Name == "PathfindNodes" and v.Parent:IsA("Folder") then
@@ -23,10 +21,21 @@ function module.new(obj, speedFactor)
         end
     end
 
+    local start, finish, step
+    if reverses then
+        start, finish, step = #nodes, 1, -1
+    else
+        start, finish, step = 1, #nodes, 1
+    end
 
-    for i = 1, #nodes - 1 do
+    ModuleEvents = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events)
+    ModuleEvents.flicker(workspace.CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value],flickerlength)
+    
+    task.wait(delay)
+
+    for i = start, finish, step do
         local nodeStart = nodes[i].CFrame
-        local nodeEnd = nodes[i + 1].CFrame
+        local nodeEnd = nodes[i + step].CFrame
         local distance = distanceBetweenCFrames(nodeStart, nodeEnd)
         local startTime = tick()
 
@@ -38,7 +47,7 @@ function module.new(obj, speedFactor)
         end
     end
 
-    p.CFrame = nodes[#nodes].CFrame
+    p.CFrame = nodes[finish].CFrame
     obj2:Destroy()
 end
 
