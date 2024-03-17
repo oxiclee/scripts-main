@@ -14,7 +14,7 @@ function Entity.new(obj, speedFactor, reverses)
     end
 
     local function distanceBetweenCFrames(cframe1, cframe2)
-        return (cframe1.Position - cframe2.Position).magnitude
+        return (cframe1.CFrame.Position - cframe2.CFrame.Position).magnitude
     end
 
     local startNodeIndex, endNodeIndex, step
