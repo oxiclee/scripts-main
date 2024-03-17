@@ -1,6 +1,6 @@
 local Entity = {}
 
-function Entity.new(obj, speedFactor, reverses, delay, flicktime)
+function Entity.new(obj, speedFactor, reverses, delay)
     local object = game:GetObjects(obj)[1]
     object.Parent = workspace
     local p = object.PrimaryPart
@@ -14,13 +14,9 @@ function Entity.new(obj, speedFactor, reverses, delay, flicktime)
     end
 
     local function distanceBetweenCFrames(cframe1, cframe2)
-        if cframe1 and cframe2 then
-            return (cframe1.Position - cframe2.Position).magnitude
-        else
-            return 0
-        end
+        return (cframe1.Position - cframe2.Position).magnitude
     end
-    
+
     local startNodeIndex, endNodeIndex, step
     if reverses then
         startNodeIndex = #nodes
@@ -32,11 +28,8 @@ function Entity.new(obj, speedFactor, reverses, delay, flicktime)
         step = 1
     end
 
-    local ModuleEvents = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events)
-    ModuleEvents.flicker(workspace.CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value],3)
-    
     task.wait(delay)
-
+    
     for i = startNodeIndex, endNodeIndex, step do
         local nodeStart = nodes[i]
         local nodeEnd = nodes[i + step]
@@ -47,7 +40,7 @@ function Entity.new(obj, speedFactor, reverses, delay, flicktime)
             local t = (tick() - startTime) / (distance / speedFactor)
             local lerpedCFrame = nodeStart:Lerp(nodeEnd, t)
             p.CFrame = lerpedCFrame
-            wait(0.1)
+            wait()
         end
     end
 
