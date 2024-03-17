@@ -5,7 +5,7 @@ function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
     object.Parent = workspace
     local p = object.PrimaryPart
 
-    if not backwards then
+    if not reverses then
         p.CFrame = workspace.CurrentRooms:GetChildren()[1].PrimaryPart.CFrame
     else
         local BAKrooms = workspace.CurrentRooms:GetChildren()
