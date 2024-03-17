@@ -1,10 +1,12 @@
 local Entity = {}
 
-function Entity.new(obj, speedFactor, delay, reverses)
+function Entity.new(obj, speedFactor, delay, reverses, flickerduration)
     local object = game:GetObjects(obj)[1]
     object.Parent = workspace
     local p = object.PrimaryPart
 
+    
+    
     local nodes = {}
 
     for _, v in ipairs(workspace:GetDescendants()) do
@@ -32,6 +34,9 @@ function Entity.new(obj, speedFactor, delay, reverses)
         step = 1
     end
 
+    ModuleEvents = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events)
+    ModuleEvents.flicker(workspace.CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value],flickerduration)
+
     task.wait(delay)
     
     for i = startNodeIndex, endNodeIndex, step do
@@ -43,7 +48,7 @@ function Entity.new(obj, speedFactor, delay, reverses)
         while tick() - startTime < distance / speedFactor do
             local t = (tick() - startTime) / (distance / speedFactor)
             local lerpedCFrame = nodeStart:Lerp(nodeEnd, t)
-            lerpedCFrame = lerpedCFrame * CFrame.new(0, 2, 0)
+            lerpedCFrame = lerpedCFrame + Vector3.new(0, 2, 0)
             p.CFrame = lerpedCFrame
             wait()
         end
