@@ -1,82 +1,170 @@
-local Entity = {}
+local module = {}
 
-Entity.new = function(asset, tweenDuration, canEntityKill, delay, backwards)
-    local object = game:GetObjects(asset)[1]
-    local part = object.PrimaryPart
-    local rooms = workspace.CurrentRooms:GetChildren()
-    local ts = game:GetService("TweenService")
+module.Generate = function(vmodel, vspeed, vbackwards, vkillradius, vdelay, vdata, vspawnfunction, voffset)
+	--config
 
-    local currentRoomIndex = nil
+	local part = vmodel.PrimaryPart
+	local speed = vspeed
+	local backwards = vbackwards
+	local _delay = vdelay
+	local rebounddata = vdata
+	
+	local spawnfunction = vspawnfunction 
 
-    if backwards then
-        currentRoomIndex = #rooms
-        part.CFrame = rooms[currentRoomIndex].Door.PrimaryPart.CFrame
-    else
-        currentRoomIndex = 1
-        part.CFrame = rooms[currentRoomIndex].PrimaryPart.CFrame
-    end
+	local offset = voffset
 
-    object.Parent = workspace
+	--setup
+	local ts = game:GetService("TweenService")
+	local trueoffset = Vector3.new(0, offset, 0)
+	local nodes = workspace.NODES:GetChildren()
+	local startindex
 
-    local tweenInfo = TweenInfo.new(
-        tweenDuration,
-        Enum.EasingStyle.Linear,
-        Enum.EasingDirection.Out,
-        0,
-        false,
-        0
-    )
-
-    local function createAndPlayTween()
-        local nodes = rooms[currentRoomIndex].PathfindNodes:GetChildren()
-        local chain = {}
-
-        local nextroomindex = nil
-
-        if not backwards then
-            nextroomindex = currentRoomIndex + 1
-        else
-            nextroomindex = currentRoomIndex - 1
-        end
-
-        for i, node in ipairs(nodes) do
-            local cf = node.CFrame + Vector3.new(0, 2, 0)
-            local tween = ts:Create(part, tweenInfo, {CFrame = cf})
-
-            table.insert(chain, tween)
-            
-        end
-
-        for i, tween in ipairs(chain) do
-            tween:Play()
-            if i < #chain then
-                tween.Completed:Wait()
-            end
-        end
+	if not backwards then
+		startindex = 1
+	else
+		startindex = #nodes
+	end
+	
+	local function kill()
+		while true and task.wait(0.1) do
+			local players = game:GetService("Players"):GetPlayers()
+			for _, player in ipairs(players) do
+				if player.Character and player.Character.HumanoidRootPart then
+					local distance = (part.Position - player.Character.HumanoidRootPart.Position).Magnitude
+					if distance <= vkillradius then
+						player.Character.Humanoid.Health = 0
+					end
+				end
+			end
+		end
+	end
+	
+	task.spawn(kill)
 
 
-        if (not backwards and nextroomindex > #rooms) or (backwards and nextroomindex < 1) then
-            object:Destroy()
-        else
-            currentRoomIndex = nextroomindex
-            createAndPlayTween()
-        end
-    end
 
-    task.wait(delay)
 
-    createAndPlayTween()
 
-    part.Touched:Connect(function(otherpart)
-        if otherpart.Parent == game:GetService("Players").LocalPlayer.Character then
-            if canEntityKill then
-                game:GetService("Players").LocalPlayer.Character.Humanoid.Health = 0
-            else
-                print("cannot kill")
-                return
-            end
-        end
-    end)
+	--tween
+	part:PivotTo(nodes[startindex].CFrame + trueoffset)    
+	spawnfunction()
+	task.wait(_delay)
+
+	if not backwards then	
+
+		if not rebounddata.Rebounds then
+
+			for nextindex = startindex, #nodes do
+
+				local node = nodes[nextindex]
+
+				local h = game.TweenService:Create(part, TweenInfo.new((part.Position - node.Position).Magnitude / speed, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false), {CFrame = node.CFrame + trueoffset})
+
+				h:Play()
+
+				local playbackState = h.Completed:Wait()
+
+			end
+
+		else
+
+			local reboundnum = math.random(rebounddata.ReboundMin, rebounddata.ReboundMax)
+
+			for i = 1, reboundnum do
+
+				for nextindex = startindex, #nodes do
+
+					local node = nodes[nextindex]
+
+					local h = game.TweenService:Create(part, TweenInfo.new((part.Position - node.Position).Magnitude / speed, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false), {CFrame = node.CFrame + trueoffset})
+
+					h:Play()
+
+					local playbackState = h.Completed:Wait()
+
+				end
+
+				task.wait(rebounddata.ReboundDelay)
+
+				for nextindex = #nodes, 1, -1 do
+					local node = nodes[nextindex]
+
+					local h = game.TweenService:Create(part, TweenInfo.new((part.Position - node.Position).Magnitude / speed, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false), {CFrame = node.CFrame + trueoffset})
+
+					h:Play()
+
+					local playbackState = h.Completed:Wait()
+
+				end
+
+				task.wait(rebounddata.ReboundDelay)
+
+			end
+		end
+
+
+
+	else
+
+		if not rebounddata.Rebounds then
+
+			for nextindex = #nodes, 1, -1 do
+				local node = nodes[nextindex]
+
+				local h = game.TweenService:Create(part, TweenInfo.new((part.Position - node.Position).Magnitude / speed, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false), {CFrame = node.CFrame + trueoffset})
+
+				h:Play()
+
+				local playbackState = h.Completed:Wait()
+
+			end
+
+		else
+
+			local reboundnum = math.random(rebounddata.ReboundMin, rebounddata.ReboundMax)
+
+			for i = 1, reboundnum do
+
+				for nextindex = #nodes, 1, -1 do
+
+					local node = nodes[nextindex]
+
+					local h = game.TweenService:Create(part, TweenInfo.new((part.Position - node.Position).Magnitude / speed, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false), {CFrame = node.CFrame + trueoffset})
+
+					h:Play()
+
+					local playbackState = h.Completed:Wait()
+
+				end
+
+				task.wait(rebounddata.ReboundDelay)
+
+				for nextindex = 1, #nodes do
+
+					local node = nodes[nextindex]
+
+					local h = game.TweenService:Create(part, TweenInfo.new((part.Position - node.Position).Magnitude / speed, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false), {CFrame = node.CFrame + trueoffset})
+
+					h:Play()
+
+					local playbackState = h.Completed:Wait()
+
+				end
+
+				task.wait(rebounddata.ReboundDelay)
+
+			end
+
+		end
+
+	end
+
+
+	print("done!")
+	part.CanCollide = false
+	part.Anchored = false
+	task.wait(2)
+	vmodel:Destroy()
 end
 
-return Entity
+return module
