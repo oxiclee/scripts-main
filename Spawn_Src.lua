@@ -1,6 +1,8 @@
 --config
 
-local part = script.Parent
+local model = game:GetObjects(yourrbxassetid)
+model.Parent = workspace
+local part = model.PrimaryPart
 local speed = 60
 local backwards = true
 local _delay = 5
@@ -215,4 +217,4 @@ part.Anchored = false
 
 task.wait(2)
 
-script.Parent:Destroy()
+model:Destroy()
