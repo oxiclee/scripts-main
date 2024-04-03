@@ -45,7 +45,7 @@ local function kill()
 				
 				local distance = (part.Position - player.Character.HumanoidRootPart.Position).Magnitude
 				
-				if distance <= killradius and player.Character:GetAttribute("Hiding") == false then
+				if distance <= killradius and player.Character:GetAttribute("Hiding") == false or player.Character:GetAttribute("Hiding") == nil then
 					
 					player.Character.Humanoid.Health = 0
 					
@@ -82,7 +82,7 @@ end
 task.spawn(functions["SpawnFunction"])
 task.wait(_delay)
 
---LOGIC DONT TOUCH UNLESS BUILDING FROM GROUND UP
+--LOGIC DONT TOUCH UNLESS BUILDING FROM GROUND UP FOR CUSTOM BEHAVIOR
 
 if not backwards then	
 	
